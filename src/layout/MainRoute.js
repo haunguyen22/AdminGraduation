@@ -28,7 +28,7 @@ const MainRoute = (props) => {
     CheckLogin()
   }, []);
   const CheckLogin = () => {
-    if (cookies.user=="null") {
+    if (cookies.user==null) {
       setLoginStatus(false);
     }
     else{

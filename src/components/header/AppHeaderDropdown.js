@@ -28,9 +28,9 @@ import { useHistory } from 'react-router-dom'
 
 const AppHeaderDropdown = () => {
   const history=useHistory();
-  const [cookies, setCookie] = useCookies(["user"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
   const logout=()=>{
-    setCookie("user",null);
+    removeCookie("user", {path:'/'})
     history.go(0)
   }
   return (
