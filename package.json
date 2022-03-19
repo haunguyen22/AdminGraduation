@@ -57,7 +57,8 @@
     "react-toastify": "^8.2.0",
     "reactstrap": "^9.0.1",
     "redux": "4.1.2",
-    "simplebar-react": "^2.3.6"
+    "simplebar-react": "^2.3.6",
+    "webpack": "^4.44.2"
   },
   "devDependencies": {
     "auto-changelog": "~2.3.0",
