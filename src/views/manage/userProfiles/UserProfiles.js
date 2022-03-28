@@ -66,7 +66,8 @@ const UserProfiles = () => {
       })
     : [];
   const options = {
-    filterType: "checkbox",
+    filter: false,
+    print: false
   };
   return (
     <>

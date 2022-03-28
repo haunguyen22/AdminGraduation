@@ -14,6 +14,7 @@ import 'simplebar/dist/simplebar.min.css'
 
 // sidebar nav config
 import navigation from '../_nav'
+import { height } from '@mui/system'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
@@ -29,8 +30,8 @@ const AppSidebar = () => {
         dispatch({ type: 'set', sidebarShow: visible })
       }}
     >
-      <CSidebarBrand className="d-none d-md-flex" to="/">
-        <CIcon className="sidebar-brand-full" icon={logoNegative} height={35} />
+      <CSidebarBrand style={{backgroundColor:"white", borderRight:"0.1px solid gainsboro"}} className="d-md-flex" to="/">
+        <img style={{width:"37%"}} width="200px" src='https://scontent.fdad1-1.fna.fbcdn.net/v/t1.15752-9/276036240_1085031082080946_1051537627686133592_n.png?_nc_cat=109&ccb=1-5&_nc_sid=ae9488&_nc_ohc=GKUYtZ2scv0AX-KQzW0&tn=I-_9vYFzLqWq7bGs&_nc_ht=scontent.fdad1-1.fna&oh=03_AVK_sTDv79ZqlQ37ApJCe8rYa7NR5EySl6grv8Jma0eCnw&oe=625F82E2'/>
         <CIcon className="sidebar-brand-narrow" icon={sygnet} height={35} />
       </CSidebarBrand>
       <CSidebarNav>

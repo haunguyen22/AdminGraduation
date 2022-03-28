@@ -55,17 +55,7 @@ const _nav = [
     icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
   },
   
-  {
-    component: CNavTitle,
-    name: 'Components',
-  },
   
-  {
-    component: CNavItem,
-    name: 'Charts',
-    to: '/charts',
-    icon: <CIcon icon={cilChartPie} customClassName="nav-icon" />,
-  },
 ]
 
 export default _nav

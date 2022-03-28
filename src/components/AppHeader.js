@@ -17,6 +17,7 @@ import { cilBell, cilEnvelopeOpen, cilList, cilMenu } from '@coreui/icons'
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
 import { logo } from 'src/assets/brand/logo'
+import Orders from 'src/views/manage/orders/Orders'
 
 const AppHeader = () => {
   const dispatch = useDispatch()
@@ -40,11 +41,20 @@ const AppHeader = () => {
               Dashboard
             </CNavLink>
           </CNavItem>
+          {/* <CNavItem>
+            <CNavLink to="orders" component={Orders}>Orders</CNavLink>
+          </CNavItem> */}
           <CNavItem>
-            <CNavLink href="#">Users</CNavLink>
+            <CNavLink href="#/manage/orders">Orders</CNavLink>
           </CNavItem>
           <CNavItem>
-            <CNavLink href="#">Settings</CNavLink>
+            <CNavLink href="#/manage/userProfiles">User Profiles</CNavLink>
+          </CNavItem>
+          <CNavItem>
+            <CNavLink href="#/manage/repairmanProfiles">Repairmen Profiles</CNavLink>
+          </CNavItem>
+          <CNavItem>
+            <CNavLink href="#/manage/category">Category</CNavLink>
           </CNavItem>
         </CHeaderNav>
         <CHeaderNav>

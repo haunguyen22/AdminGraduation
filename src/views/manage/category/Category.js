@@ -26,12 +26,25 @@ import {
 } from "firebase/firestore";
 import db from "src/firebase.config";
 // import { Button } from "@coreui/coreui";
-import { Button, Form, FormGroup, Label, Input, Row, Col } from "reactstrap";
+import {
+  Button,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Row,
+  Col,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "reactstrap";
 
 const Category = () => {
   const columns = ["Name", "Image", "Role", "Tag", "Action"];
   const [typeActon, setTypeAcction] = useState("add");
   const [showForm, setShowForm] = useState(false);
+  const [modal, setModal] = useState(false);
   const [dataForm, setDataForm] = useState({
     name: "",
     photoURL: "",
@@ -89,7 +102,7 @@ const Category = () => {
     }
     getData();
     removeDataForm();
-    setShowForm(false);
+    setModal(false);
   };
   const removeDataForm = () => {
     setDataForm({
@@ -130,7 +143,7 @@ const Category = () => {
               onClick={() => {
                 setTypeAcction("update");
                 setDataForm(e);
-                setShowForm(true);
+                setModal(true);
               }}
             >
               Update
@@ -140,81 +153,19 @@ const Category = () => {
       })
     : [];
   const options = {
-    filterType: "checkbox",
+    filter: false,
+    print: false,
+  };
+  const toggle = () => {
+    setModal(!modal);
   };
   return (
     <>
-      {showForm && (
-        <Form style={{ marginBottom: "20px" }} onSubmit={handleSubmit}>
-          <FormGroup >
-            <Label for="name">Name</Label>
-            <Input
-              type="text"
-              name="name"
-              id="name"
-              onChange={handleChange}
-              style={{width:"40%"}}
-              value={dataForm.name}
-              required
-            />
-          </FormGroup>
-          <FormGroup>
-            <Label for="photoURL">Image</Label>
-            <Input
-              onChange={handleChange}
-              style={{width:"40%"}}
-              type="text"
-              name="photoURL"
-              id="photoURL"
-              value={dataForm.photoURL}
-              required
-            />
-          </FormGroup>
-          <FormGroup>
-            <Label for="role">Role</Label>
-            <Input
-              type="text"
-              onChange={handleChange}
-              name="role"
-              style={{width:"40%"}}
-              id="role"
-              value={dataForm.role}
-              required
-            />
-          </FormGroup>
-          <FormGroup>
-            <Label for="tag">Tag</Label>
-            <Input
-              type="text"
-              onChange={handleChange}
-              style={{width:"40%"}}
-              name="tag"
-              id="tag"
-              value={dataForm.tag}
-              required
-            />
-          </FormGroup>
-          <div style={{ display: "flex" }}>
-            <Button type="submit">Submit</Button>
-            <Button
-              style={{ backgroundColor: "red", marginLeft: "10px" }}
-              color="#3300FF"
-              onClick={() => {
-                setShowForm(false);
-                setTypeAcction("add");
-                removeDataForm();
-              }}
-            >
-              Cancel
-            </Button>
-          </div>
-        </Form>
-      )}
       <Button
         style={{ backgroundColor: "#3300FF" }}
         color="#3300FF"
         onClick={() => {
-          setShowForm(true);
+          setModal(true);
           setTypeAcction("add");
           removeDataForm();
         }}
@@ -231,6 +182,98 @@ const Category = () => {
           options={options}
         />
       </CCard>
+
+      <Modal isOpen={modal} toggle={toggle}>
+        <ModalHeader toggle={toggle}>{typeActon=="add"?"Add New Category":"Update Category"} </ModalHeader>
+        <ModalBody>
+          <Form  onSubmit={handleSubmit}>
+            <table style={{ width: "80%", marginBottom:"10px" }}>
+              <tr>
+                <td>
+                  <Label for="name">Name: </Label>
+                </td>
+                <td>
+                  <Input
+                    type="text"
+                    name="name"
+                    id="name"
+                    onChange={handleChange}
+                    style={{ width: "100%" }}
+                    value={dataForm.name}
+                    required
+                  />
+                </td>
+              </tr>
+              <tr></tr>
+              <tr>
+                <td>
+                  <Label for="photoURL">Image: </Label>
+                </td>
+                <td>
+                  <Input
+                    onChange={handleChange}
+                    style={{ width: "100%" }}
+                    type="text"
+                    name="photoURL"
+                    id="photoURL"
+                    value={dataForm.photoURL}
+                    required
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <Label for="role">Role: </Label>
+                </td>
+                <td>
+                  <Input
+                    type="text"
+                    onChange={handleChange}
+                    name="role"
+                    style={{ width: "100%" }}
+                    id="role"
+                    value={dataForm.role}
+                    required
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <Label for="tag">Tag: </Label>
+                </td>
+                <td>
+                  <Input
+                    type="text"
+                    onChange={handleChange}
+                    style={{ width: "100%" }}
+                    name="tag"
+                    id="tag"
+                    value={dataForm.tag}
+                    required
+                  />
+                </td>
+              </tr>
+            </table>
+
+            <ModalFooter>
+              <div style={{ display: "flex"}}>
+                <Button type="submit" style={{backgroundColor:"green"}}>Submit</Button>
+                <Button
+                  style={{ backgroundColor: "red", marginLeft: "10px" }}
+                  color="#3300FF"
+                  onClick={() => {
+                    setModal(false);
+                    setTypeAcction("add");
+                    removeDataForm();
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </ModalFooter>
+          </Form>
+        </ModalBody>
+      </Modal>
     </>
   );
 };
