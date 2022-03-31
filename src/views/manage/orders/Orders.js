@@ -19,34 +19,35 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 const Orders = () => {
   
   const columns = [
-    "Information Client",
-    "Information Repairmen",
-    "Book Service",
+    "Client Information",
+    "Repairmen Information",
+    "List Work",
     "Create Day",
     "Date",
     "Distance",
-    "Ship Price",
+    "Shipping Fee",
     "Status",
     "Time",
-    "Total Prices",
+    "Total",
     "Action",
   ];
+  const [tab, setTab] = useState('Order');
   const [dataOrder, setdataOrder] = useState([]);
   const [orderDetail, setOrderDetail] = useState(-1);
   const [modal, setModal] = useState(false);
   useEffect(() => {
-    getData();
+    getData(tab);
   }, []);
-  const getData = () => {
+  const getData = (tabData) => {
     try {
-      onSnapshot(collection(db, "order"), (snapshot) => {
+      onSnapshot(collection(db, tabData=="Order"?"order":tabData=="Cancel order"?"orderCancel":tabData=="Order Success"?"orderSuccess":"orderDoing"), (snapshot) => {
         let arr = [];
         snapshot.docs.map((e) => {
           let data = e.data();
           data.id = e.id;
           arr.push(data);
         });
-        console.log(arr);
+        // console.log(arr);
         setdataOrder(arr);
       });
     } catch (error) {
@@ -70,7 +71,7 @@ const Orders = () => {
           e.date,
           <div style={{textAlign:"center"}}>{e.distance}</div>,
           <div style={{textAlign:"center"}}>{e.shipPrice}</div>,
-          <b style={{color:"blue"}}>{e.status}</b>,
+          <b style={{color:tab=="Order Success"?"green":tab=="Cancel order"?"red":tab=="Order"?"#FFD700": "orange"}}>{e.status}</b>,
 
           e.time,
           e.totalPrice,
@@ -99,9 +100,80 @@ const Orders = () => {
     filter: false,
     print: false
   };
-
+  const setDataTab=async(tabSet)=>{
+    setTab(tabSet);
+    await getData(tabSet);
+  }
   return (
     <>
+    <div style={styles.tabs}>
+        <div
+          style={{
+            ...styles.tab,
+            ...(tab == 'Order' ? styles.activeTab : {}),
+          }}
+        >
+          <button
+            onClick={() => setDataTab('Order')}
+            style={{
+              ...styles.btnTab,
+              ...(tab == 'Order' ? styles.btnTabActive : {}),
+            }}
+          >
+            Order
+          </button>
+        </div>
+        <div
+          style={{
+            ...styles.tab,
+            ...(tab == 'Order doing' ? styles.activeTab : {}),
+          }}
+        >
+          <button
+            onClick={() => setDataTab('Order doing')}
+            style={{
+              ...styles.btnTab,
+              ...(tab == 'Order doing' ? styles.btnTabActive : {}),
+            }}
+          >
+            {' '}
+            Order Doing
+          </button>
+        </div>
+        <div
+          style={{
+            ...styles.tab,
+            ...(tab == 'Order Success' ? styles.activeTab : {}),
+          }}
+        >
+          <button
+            onClick={() => setDataTab('Order Success')}
+            style={{
+              ...styles.btnTab,
+              ...(tab == 'Order Success' ? styles.btnTabActive : {}),
+            }}
+          >
+            Order Success
+          </button>
+        </div>
+        <div
+          style={{
+            ...styles.tab,
+            ...(tab == 'Cancel order' ? styles.activeTab : {}),
+          }}
+        >
+          <button
+            onClick={() => setDataTab('Cancel order')}
+            style={{
+              ...styles.btnTab,
+              ...(tab == 'Cancel order' ? styles.btnTabActive : {}),
+            }}
+          >
+            Order Cancel
+          </button>
+        </div>
+        
+      </div>
       <CCard className="mb-4">
         <CCardHeader>Orders</CCardHeader>
         <MUIDataTable
@@ -117,7 +189,7 @@ const Orders = () => {
           {dataOrder!==null&&orderDetail!==-1 &&(
             <div style={{margin:"50px" }}>
               <div>
-                  <b>Information Client </b>
+                  <b>Client Information</b>
                   <div style={{display: "flex"}}>
                     <div style={{width:"25%"}}>
                       <img style={{width:"100%", borderRadius:"30%", padding:"10px", margin:"5px"}} src={dataOrder[orderDetail].informationClient.photoURL} status="" />
@@ -130,7 +202,7 @@ const Orders = () => {
                     </div>
                   </div>
 
-                  <b>Information Repairmen </b>
+                  <b>Repairmen Information</b>
                   <div style={{display: "flex"}}>
                     <div style={{width:"25%"}}>
                       <img style={{width:"100%", borderRadius:"30%", padding:"10px", margin:"5px"}} src={dataOrder[orderDetail].informationRepairmen.photoURL} status="" />
@@ -143,7 +215,7 @@ const Orders = () => {
                       Gender: { dataOrder[orderDetail].informationRepairmen.sex }<br></br>
                     </div>
                   </div>
-                  <b>Book Service</b>
+                  <b>List Work</b>
                   <div style={{ padding:"10px"}}>
                       {dataOrder[orderDetail].bookService.map(e=><div style={{display: "flex"}}>
                         <div >{e.nameService}</div> 
@@ -159,11 +231,11 @@ const Orders = () => {
                   <div style={{display: "flex"}}><b>Distance: </b>
                     <div style={{paddingLeft:"10px"}}> { dataOrder[orderDetail].distance}</div>
                   </div>
-                  <div style={{display: "flex"}}><b>Ship Price: </b>
+                  <div style={{display: "flex"}}><b>Shipping Fee: </b>
                    <b><div style={{color:"black", paddingLeft:"10px"}}> { dataOrder[orderDetail].shipPrice}VNĐ</div></b> 
                   </div>
                   <div style={{display: "flex"}}><b>Status: </b>
-                    <b><div style={{color:"blue", paddingLeft:"10px"}}> { dataOrder[orderDetail].status}</div></b>
+                    <b><div style={{color:"orange", paddingLeft:"10px"}}> { dataOrder[orderDetail].status}</div></b>
                   </div>
                   <div style={{display: "flex"}}><b>Time: </b>
                     <div style={{paddingLeft:"10px"}}> { dataOrder[orderDetail].time}</div>
@@ -187,3 +259,27 @@ const Orders = () => {
 };
 
 export default Orders;
+const styles = {
+  tabs: {
+    justifyContent: 'center',
+    display: 'flex',
+    marginBottom: '20px',
+  },
+  tab: {
+    marginRight: '10px',
+    padding: '10px',
+  },
+  activeTab: {
+    borderBottom: 'solid 2px orange',
+  },
+  btnTab: {
+    border: 'none',
+    backgroundColor: 'transparent',
+  },
+  btnTabActive: {
+    border: 'none',
+    backgroundColor: 'transparent',
+    fontWeight: 'bold',
+    color: 'orange',
+  },
+};

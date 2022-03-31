@@ -17,11 +17,12 @@ import db from "src/firebase.config";
 
 const WidgetsDropdown = () => {
   const [dataUser, setDataUser] = useState([]);
+  const [dataRepairmen, setDataRepairmen] = useState([]);
   const [dataOrder, setDataOrder] = useState([]);
   useEffect(() => {
     getData();
   }, []);
-  const getData = () => {
+  const getData =async () => {
     try {
       onSnapshot(
         query(
@@ -36,21 +37,69 @@ const WidgetsDropdown = () => {
             data.id = e.id;
             arr.push(data);
           });
-          console.log(arr);
           setDataUser(arr);
         }
       );
-      onSnapshot(query(collection(db, "repairmen"), where("status", "==", "active"),),
-      (snapshot) => {
-        let arr = [];
-        snapshot.docs.map((e) => {
-          let data = e.data();
-          data.id = e.id;
-          arr.push(data);
-        });
-        setDataOrder(arr);
-      }
-    );
+      onSnapshot(
+        query(collection(db, "repairmen"), where("status", "==", "active")),
+        (snapshot) => {
+          let arr = [];
+          snapshot.docs.map((e) => {
+            let data = e.data();
+            data.id = e.id;
+            arr.push(data);
+          });
+          setDataRepairmen(arr);
+        }
+      );
+      await onSnapshot(
+        collection(db, "order"),
+        (snapshot) => { 
+          let arr = [];
+          snapshot.docs.map((e) => {
+            let data = e.data();
+            data.id = e.id;
+            arr.push(data);
+          });
+          setDataOrder(arr)
+        }
+      );
+      await onSnapshot(
+        collection(db, "orderCancel"),
+        (snapshot) => { 
+          let arr = [];
+          snapshot.docs.map((e) => {
+            let data = e.data();
+            data.id = e.id;
+            arr.push(data);
+          });
+          setDataOrder([...dataOrder, ...arr]);
+        }
+      );
+      await onSnapshot(
+        collection(db, "orderSuccess"),
+        (snapshot) => { 
+          let arr = [];
+          snapshot.docs.map((e) => {
+            let data = e.data();
+            data.id = e.id;
+            arr.push(data);
+          });
+          setDataOrder([...dataOrder, ...arr]);
+        }
+      );
+      await onSnapshot(
+        collection(db, "orderDoing"),
+        (snapshot) => { 
+          let arr = [];
+          snapshot.docs.map((e) => {
+            let data = e.data();
+            data.id = e.id;
+            arr.push(data);
+          });
+          setDataOrder([...dataOrder, ...arr]);
+        }
+      );
     } catch (error) {
       console.log(error);
     }
@@ -63,7 +112,7 @@ const WidgetsDropdown = () => {
           color="danger"
           // "primary"
           value={<>{dataUser ? dataUser.length : 0}</>}
-          title="Users"
+          title="Households"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle
@@ -84,11 +133,7 @@ const WidgetsDropdown = () => {
         <CWidgetStatsA
           className="mb-4"
           color="info"
-          value={
-            <>
-              {dataOrder?dataOrder.length:0}
-            </>
-          }
+          value={<>{dataRepairmen ? dataRepairmen.length : 0}</>}
           title="Repairmen"
           action={
             <CDropdown alignment="end">
@@ -112,10 +157,7 @@ const WidgetsDropdown = () => {
           color="warning"
           value={
             <>
-              2.49{" "}
-              <span className="fs-6 fw-normal">
-                (84.7% <CIcon icon={cilArrowTop} />)
-              </span>
+                {dataOrder && dataOrder.length}
             </>
           }
           title="Orders"

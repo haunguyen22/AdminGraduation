@@ -42,7 +42,7 @@
     "classnames": "^2.3.1",
     "core-js": "^3.19.1",
     "enzyme": "^3.11.0",
-    "firebase": "^9.6.7",
+    "firebase": "^9.6.10",
     "firebase-admin": "^10.0.2",
     "import": "^0.0.6",
     "mui-datatables": "^4.1.2",

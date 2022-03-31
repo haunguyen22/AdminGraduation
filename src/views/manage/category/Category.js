@@ -15,6 +15,13 @@ import "react-toastify/dist/ReactToastify.css";
 import Switch from "react-switch";
 import MUIDataTable from "mui-datatables";
 import {
+  ref as refStorage,
+  getStorage,
+  uploadBytes,
+  getDownloadURL,
+  uploadString,
+} from "firebase/storage";
+import {
   addDoc,
   collection,
   deleteDoc,
@@ -45,6 +52,8 @@ const Category = () => {
   const [typeActon, setTypeAcction] = useState("add");
   const [showForm, setShowForm] = useState(false);
   const [modal, setModal] = useState(false);
+  const [file, setFile] = useState(null);
+  const [url, setURL] = useState("");
   const [dataForm, setDataForm] = useState({
     name: "",
     photoURL: "",
@@ -71,18 +80,46 @@ const Category = () => {
     }
   };
   const updateCategory = async () => {
+    
     const DocRef = doc(db, "category", dataForm.id);
     try {
-      await updateDoc(DocRef, dataForm);
-      toast("Update category success!");
+      const data = {
+        name: dataForm.name,
+        photoURL: dataForm.photoURL,
+        role: dataForm.role,
+        tag: dataForm.tag,
+      };
+      if(file!==null){
+        let urlImage = "";
+        const storage = getStorage();
+        const storageRef = refStorage(storage, `category/${file.name}`);
+        await uploadBytes(storageRef, file).then(async (snapshot) => {
+          urlImage = await getDownloadURL(storageRef);
+        });
+        data.photoURL=urlImage;
+      }
+      await updateDoc(DocRef, data);
+      toast("Update category successfully!");
     } catch (err) {
       alert(err);
     }
   };
   const addCategory = async () => {
     try {
-      await addDoc(collection(db, "category"), dataForm);
-      toast("Add category success!");
+      let urlImage = "";
+      const storage = getStorage();
+      const storageRef = refStorage(storage, `category/${file.name}`);
+      await uploadBytes(storageRef, file).then(async (snapshot) => {
+        urlImage = await getDownloadURL(storageRef);
+      });
+      const data = {
+        name: dataForm.name,
+        photoURL: urlImage,
+        role: dataForm.role,
+        tag: dataForm.tag,
+      };
+      await addDoc(collection(db, "category"), data);
+      toast("Add category successfully!");
     } catch (error) {
       console.log(error);
     }
@@ -103,6 +140,7 @@ const Category = () => {
     getData();
     removeDataForm();
     setModal(false);
+    setFile(null)
   };
   const removeDataForm = () => {
     setDataForm({
@@ -117,7 +155,7 @@ const Category = () => {
 
     if (result) {
       await deleteDoc(doc(db, "category", id));
-      toast("Delete category success!");
+      toast("Delete category successfully!");
     } else {
     }
   };
@@ -159,6 +197,18 @@ const Category = () => {
   const toggle = () => {
     setModal(!modal);
   };
+  const handleChangeImage = (e) => {
+    setFile(e.target.files[0]);
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (reader.readyState === 2) {
+        setDataForm((prevState) => {
+          return { ...prevState, photoURL: reader.result };
+        });
+      }
+    };
+    reader.readAsDataURL(e.target.files[0]);
+  };
   return (
     <>
       <Button
@@ -184,10 +234,12 @@ const Category = () => {
       </CCard>
 
       <Modal isOpen={modal} toggle={toggle}>
-        <ModalHeader toggle={toggle}>{typeActon=="add"?"Add New Category":"Update Category"} </ModalHeader>
+        <ModalHeader toggle={toggle}>
+          {typeActon == "add" ? "Add New Category" : "Update Category"}{" "}
+        </ModalHeader>
         <ModalBody>
-          <Form  onSubmit={handleSubmit}>
-            <table style={{ width: "80%", marginBottom:"10px" }}>
+          <Form onSubmit={handleSubmit}>
+            <table style={{ width: "80%", marginBottom: "10px" }}>
               <tr>
                 <td>
                   <Label for="name">Name: </Label>
@@ -204,23 +256,32 @@ const Category = () => {
                   />
                 </td>
               </tr>
-              <tr></tr>
+
               <tr>
                 <td>
                   <Label for="photoURL">Image: </Label>
                 </td>
                 <td>
                   <Input
-                    onChange={handleChange}
+                    onChange={handleChangeImage}
                     style={{ width: "100%" }}
-                    type="text"
-                    name="photoURL"
+                    type="file"
                     id="photoURL"
-                    value={dataForm.photoURL}
-                    required
+                    required={typeActon=="add"?true:false}
                   />
                 </td>
               </tr>
+              <tr>
+                <td></td>
+                <td>
+                  <img
+                    src={dataForm.photoURL}
+                    alt=""
+                    style={{ width: "70%", height: "auto" }}
+                  />
+                </td>
+              </tr>
+
               <tr>
                 <td>
                   <Label for="role">Role: </Label>
@@ -256,8 +317,10 @@ const Category = () => {
             </table>
 
             <ModalFooter>
-              <div style={{ display: "flex"}}>
-                <Button type="submit" style={{backgroundColor:"green"}}>Submit</Button>
+              <div style={{ display: "flex" }}>
+                <Button type="submit" style={{ backgroundColor: "green" }}>
+                  Submit
+                </Button>
                 <Button
                   style={{ backgroundColor: "red", marginLeft: "10px" }}
                   color="#3300FF"
