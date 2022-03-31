@@ -18,11 +18,11 @@ import db from "src/firebase.config";
 const WidgetsDropdown = () => {
   const [dataUser, setDataUser] = useState([]);
   const [dataRepairmen, setDataRepairmen] = useState([]);
-  const [dataOrder, setDataOrder] = useState([]);
+  const [dataOrder, setDataOrder] = useState(0);
   useEffect(() => {
     getData();
   }, []);
-  const getData =async () => {
+  const getData = async () => {
     try {
       onSnapshot(
         query(
@@ -40,7 +40,7 @@ const WidgetsDropdown = () => {
           setDataUser(arr);
         }
       );
-      onSnapshot(
+      await onSnapshot(
         query(collection(db, "repairmen"), where("status", "==", "active")),
         (snapshot) => {
           let arr = [];
@@ -52,54 +52,44 @@ const WidgetsDropdown = () => {
           setDataRepairmen(arr);
         }
       );
-      await onSnapshot(
-        collection(db, "order"),
-        (snapshot) => { 
-          let arr = [];
-          snapshot.docs.map((e) => {
-            let data = e.data();
-            data.id = e.id;
-            arr.push(data);
-          });
-          setDataOrder(arr)
-        }
-      );
-      await onSnapshot(
-        collection(db, "orderCancel"),
-        (snapshot) => { 
-          let arr = [];
-          snapshot.docs.map((e) => {
-            let data = e.data();
-            data.id = e.id;
-            arr.push(data);
-          });
-          setDataOrder([...dataOrder, ...arr]);
-        }
-      );
-      await onSnapshot(
-        collection(db, "orderSuccess"),
-        (snapshot) => { 
-          let arr = [];
-          snapshot.docs.map((e) => {
-            let data = e.data();
-            data.id = e.id;
-            arr.push(data);
-          });
-          setDataOrder([...dataOrder, ...arr]);
-        }
-      );
-      await onSnapshot(
-        collection(db, "orderDoing"),
-        (snapshot) => { 
-          let arr = [];
-          snapshot.docs.map((e) => {
-            let data = e.data();
-            data.id = e.id;
-            arr.push(data);
-          });
-          setDataOrder([...dataOrder, ...arr]);
-        }
-      );
+      let num=0;
+      await onSnapshot(collection(db, "order"), async (snapshot) => {
+        let arr = [];
+        await snapshot.docs.map((e) => {
+          let data = e.data();
+          data.id = e.id;
+          arr.push(data);
+        });
+        setDataOrder((prevState) => (prevState+arr.length));
+      });
+      await onSnapshot(collection(db, "orderCancel"), async (snapshot) => {
+        let arr = [];
+        await snapshot.docs.map((e) => {
+          let data = e.data();
+          data.id = e.id;
+          arr.push(data);
+        });
+        setDataOrder((prevState) => (prevState+arr.length));
+      });
+      await onSnapshot(collection(db, "orderSuccess"), async (snapshot) => {
+        let arr = [];
+        await snapshot.docs.map((e) => {
+          let data = e.data();
+          data.id = e.id;
+          arr.push(data);
+        });
+        setDataOrder((prevState) => (prevState+arr.length));
+      });
+      await onSnapshot(collection(db, "orderDoing"), async (snapshot) => {
+        let arr = [];
+        await snapshot.docs.map((e) => {
+          let data = e.data();
+          data.id = e.id;
+          arr.push(data);
+        });
+        setDataOrder((prevState) => (prevState+arr.length));
+      });
+      console.log(num);
     } catch (error) {
       console.log(error);
     }
@@ -155,11 +145,7 @@ const WidgetsDropdown = () => {
         <CWidgetStatsA
           className="mb-4"
           color="warning"
-          value={
-            <>
-                {dataOrder && dataOrder.length}
-            </>
-          }
+          value={dataOrder }
           title="Orders"
           action={
             <CDropdown alignment="end">
